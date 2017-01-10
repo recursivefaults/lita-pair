@@ -2,11 +2,11 @@ Gem::Specification.new do |spec|
   spec.name          = "lita-pair"
   spec.version       = "0.1.0"
   spec.authors       = ["Ryan Latta"]
-  spec.email         = ["rlatta@thoughtworks.com"]
-  spec.description   = "TODO: Add a description"
-  spec.summary       = "TODO: Add a summary"
-  spec.homepage      = "TODO: Add a homepage"
-  spec.license       = "TODO: Add a license"
+  spec.email         = ["recursive.faults@gmail.com"]
+  spec.description   = "A lita handler that will help with pair programming rotations"
+  spec.summary       = "Automate your programming pairs"
+  spec.homepage      = "https://github.com/recursive.faults/lita-pair"
+  spec.license       = "MIT"
   spec.metadata      = { "lita_plugin_type" => "handler" }
 
   spec.files         = `git ls-files`.split($/)
