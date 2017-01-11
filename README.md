@@ -4,9 +4,12 @@
 
 If you're crazy (And I do mean crazy) about pair programming as a team you may have experienced a certaind difficulty 
 figuring out who to pair with, having lots of people swap around, or just choosing in general. Well, with lita-pair,
-a bot that doesn't know or care about you, will decide exactly who you should pair with. Think of it, all that time
-wasted deciding on who whould be the best pair to solve that urgent problem will be replaced with cold indifferent
-automation. Usher in your new automated pair overlord today!
+a bot that doesn't know or care about you, will decide exactly who you should pair with. 
+
+Think of it, all that time wasted deciding on who whould be the best pair to solve that urgent problem will be 
+replaced with cold indifferent automation. 
+
+Usher in your new automated pair overlord today!
 
 ## Installation
 
