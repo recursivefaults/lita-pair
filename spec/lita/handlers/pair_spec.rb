@@ -12,63 +12,86 @@ describe Lita::Handlers::Pair, lita_handler: true do
     it { is_expected.to route("pair remove Ryan") }
     it { is_expected.to route("pair  remove  Ryan") }
 
-    
+
     it { is_expected.to route("pair one") }
     it { is_expected.to route("pair  one") }
-    
+
+    it { is_expected.to route("pair members") }
   end
 
-  describe 'behaviors' do
-    describe 'creating a pair' do
+  describe 'creating a pair' do
 
-      before(:each) do
-        subject.add_user 'Ryan'
-        subject.add_user 'Stephen'
-      end
-
-      it 'should create a pair when there are users' do
-        send_message 'pair one'
-        message = replies.last
-        expect(message).to include 'pair of: '
-        expect(message).to include 'Ryan'
-        expect(message).to include 'Stephen'
-      end
-      
-      it 'should tell me if there aren\'t enough people to pair' do
-        subject.remove_user('Ryan')
-        send_message 'pair one'
-        message = replies.last
-        expect(message).to_not include 'pair of: '
-        expect(message).to include 'Sorry, I can\'t make a pair out of one person. Try adding more people with pair add'
-      end
+    before(:each) do
+      subject.add_user 'Ryan'
+      subject.add_user 'Stephen'
     end
 
-    describe 'adding a pair' do
-      it 'should add a user to the list of people when the add command is triggered' do
-        send_message 'pair add Ryan'
-        members = subject.redis.smembers 'pair_members'
-        expect(members).to include('Ryan')
-      end
-
-      it 'should add a user\'s full name to the list of people when the add command is triggered' do
-        send_message 'pair add Ryan Latta'
-        members = subject.redis.smembers 'pair_members'
-        expect(members).to include('Ryan Latta')
-      end
+    it 'should create a pair when there are users' do
+      send_message 'pair one'
+      message = replies.last
+      expect(message).to include 'pair of: '
+      expect(message).to include 'Ryan'
+      expect(message).to include 'Stephen'
     end
 
-    describe 'removing a pair' do
-      before(:each) do
-        subject.add_user 'Ryan'
-      end
-      it 'should add a user to the list of people when the add command is triggered' do
-        send_message 'pair remove Ryan'
-        members = subject.redis.smembers 'pair_members'
-        expect(members).to_not include('Ryan')
-      end
+    it 'should tell me if there aren\'t enough people to pair' do
+      subject.remove_user('Ryan')
+      send_message 'pair one'
+      message = replies.last
+      expect(message).to_not include 'pair of: '
+      expect(message).to include 'Sorry, I can\'t make a pair out of one person. Try adding more people with pair add'
     end
-
   end
+
+  describe 'listing members' do
+    before(:each) do
+      subject.add_user 'Ryan'
+      subject.add_user 'Stephen'
+    end
+
+    it 'should list the members when prompted' do
+      send_message 'pair members'
+      statement = replies.last
+      members = subject.redis.smembers 'pair_members'
+      members.each { |m| expect(statement).to include(m) }
+    end
+
+    it 'should tell me when there are no members' do
+      subject.remove_user 'Ryan'
+      subject.remove_user 'Stephen'
+      send_message 'pair members'
+      expect(replies.last).to eq('There aren\'t any people to pair with. Try adding some.')
+    end
+  end
+
+  describe 'adding a pair' do
+    it 'should add a user to the list of people when the add command is triggered' do
+      send_message 'pair add Ryan'
+      members = subject.redis.smembers 'pair_members'
+      expect(members).to include('Ryan')
+      expect(replies.last).to include('Got it. Ryan has been added to the mix')
+    end
+
+    it 'should add a user\'s full name to the list of people when the add command is triggered' do
+      send_message 'pair add Ryan Latta'
+      members = subject.redis.smembers 'pair_members'
+      expect(members).to include('Ryan Latta')
+      expect(replies.last).to include('Got it. Ryan Latta has been added to the mix')
+    end
+  end
+
+  describe 'removing a pair' do
+    before(:each) do
+      subject.add_user 'Ryan'
+    end
+    it 'should add a user to the list of people when the add command is triggered' do
+      send_message 'pair remove Ryan'
+      members = subject.redis.smembers 'pair_members'
+      expect(members).to_not include('Ryan')
+      expect(replies.last).to include('Too bad, looks like Ryan won\'t be in any more of the pairings.')
+    end
+  end
+
 
   describe '#add_user' do
     it 'should add a named person to the redis cache' do
