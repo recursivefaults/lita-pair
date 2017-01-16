@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "lita-pair"
-  spec.version       = "0.1.0"
+  spec.version       = "0.1.1"
   spec.authors       = ["Ryan Latta"]
   spec.email         = ["recursive.faults@gmail.com"]
   spec.description   = "A lita handler that will help with pair programming rotations"
@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "lita", ">= 4.7"
+  spec.add_runtime_dependency "lita", ">= 4.6"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "pry-byebug"
