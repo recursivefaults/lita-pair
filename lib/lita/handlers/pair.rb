@@ -1,11 +1,44 @@
 module Lita
   module Handlers
     class Pair < Handler
+      class Matchmaker
+        def self.shuffle(redis, key)
+          new(redis, key).shuffle
+        end
+
+        def initialize(redis, key)
+          self.redis = redis
+          self.key = key
+        end
+
+        def shuffle
+          return members if members.empty?
+          members.shuffle
+        end
+
+        private
+
+        attr_accessor :redis, :key
+
+        def members
+          @members ||= redis.smembers(key)
+        end
+      end
+
       REDIS_KEY = 'pair_members'
 
       ###
       # Routes
       ###
+      route(/\Apair\s+shuffle/) do |response|
+        pairs = Lita::Handlers::Pair::Matchmaker.shuffle(redis, REDIS_KEY)
+        if pairs.empty?
+          response.reply  'There is nobody to pair 😭'
+        else
+          response.reply "the pairs are: #{pairs.join(', ')}"
+        end
+      end
+
       route(/^pair\s+add\s+(\w+)/) do |response|
         name = parse_name(response)
         add_user(name)

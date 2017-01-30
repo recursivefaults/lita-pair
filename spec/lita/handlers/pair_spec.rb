@@ -17,6 +17,33 @@ describe Lita::Handlers::Pair, lita_handler: true do
     it { is_expected.to route("pair  one") }
 
     it { is_expected.to route("pair members") }
+    it { is_expected.to route("pair shuffle") }
+    it { is_expected.to route("pair   shuffle") }
+  end
+
+  describe 'shuffling pairs' do
+    it 'should mix all the members into pairs' do
+      subject.add_user 'Ryan'
+      subject.add_user 'Evan'
+      send_message 'pair shuffle'
+      expect(replies.last).to include 'the pairs are: '
+    end
+
+    it 'includes the members in the pairing list' do
+      subject.add_user 'Ryan'
+      subject.add_user 'Evan'
+      send_message 'pair shuffle'
+      members = subject.redis.smembers('pair_members')
+      message = replies.last
+      listed_members = message.split(': ')[1].split(', ')
+      expect(listed_members).to include *members
+      expect(listed_members.count).to equal(members.count)
+    end
+
+    it 'handles no members in the pairing list' do
+      send_message 'pair shuffle'
+      expect(replies.last).to eq('There is nobody to pair 😭')
+    end
   end
 
   describe 'creating a pair' do
