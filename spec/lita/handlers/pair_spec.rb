@@ -44,6 +44,16 @@ describe Lita::Handlers::Pair, lita_handler: true do
       send_message 'pair support'
       expect(replies.last).to eq('Sorry, I can\'t make a pair out of one person. Try adding more people with pair add')
     end
+
+    it 'sets the topic on the #support channel' do
+      subject.add_user 'Ryan'
+      subject.add_user 'Maurice'
+      maurice = Lita::User.create(123, name: "Maurice")
+      room = Lita::Room.create_or_update(1, {name: '#waffles'})
+      expect(room.name).to eq('#waffles')
+      send_message('pair support', {as: maurice, from: room})
+      expect(source).to eq '#support'
+    end
   end
 
   describe 'shuffling pairs' do
