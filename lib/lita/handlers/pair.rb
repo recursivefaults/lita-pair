@@ -60,6 +60,17 @@ module Lita
         end
       end
 
+      route(/^pair\s+support/) do |response|
+        pair = create_pair
+        if pair_members.size == 1
+          response.reply('Sorry, I can\'t make a pair out of one person. Try adding more people with pair add')
+        elsif pair.nil?
+          response.reply 'There is nobody to pair 😭'
+        else
+          response.reply "/topic #{pair.join(' & ')} on Support - Remember to @ mention if slow response - Feb 9th"
+        end
+      end
+
       route(/^pair\s+one/) do |response|
         pair = create_pair
         if pair.nil?
@@ -80,7 +91,7 @@ module Lita
       def create_pair
         members = pair_members.shuffle
         pair = members.take(2)
-        return nil if pair.size == 1
+        return nil if pair.size <= 1
         pair
       end
 

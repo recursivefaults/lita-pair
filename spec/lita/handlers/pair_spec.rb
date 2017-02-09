@@ -19,6 +19,31 @@ describe Lita::Handlers::Pair, lita_handler: true do
     it { is_expected.to route("pair members") }
     it { is_expected.to route("pair shuffle") }
     it { is_expected.to route("pair   shuffle") }
+
+    it { is_expected.to route("pair support") }
+    it { is_expected.to route("pair   support") }
+  end
+
+  describe 'support pair' do
+    it 'should change the topic of the channel' do
+      subject.add_user 'Ryan'
+      subject.add_user 'Maurice'
+      send_message 'pair support'
+      expect(replies.last).to include '/topic'
+      expect(replies.last).to include 'on Support - Remember to @ mention if slow response - Feb 9th'
+      expect(replies.last).to include *subject.redis.smembers('pair_members')
+    end
+
+    it 'handles no members in the pairing list' do
+      send_message 'pair support'
+      expect(replies.last).to eq('There is nobody to pair 😭')
+    end
+
+    it 'handles one member in the pairing list' do
+      subject.add_user 'Maurice'
+      send_message 'pair support'
+      expect(replies.last).to eq('Sorry, I can\'t make a pair out of one person. Try adding more people with pair add')
+    end
   end
 
   describe 'shuffling pairs' do
