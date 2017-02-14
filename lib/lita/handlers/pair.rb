@@ -2,8 +2,7 @@ require 'helpers/matchmaker'
 module Lita
   module Handlers
     class Pair < Handler
-      REDIS_KEY = 'pair_members'
-
+      REDIS_KEY = 'pair_members'    
       ###
       # Routes
       ###
@@ -12,7 +11,7 @@ module Lita
         if pairs.empty?
           response.reply  'There is nobody to pair 😭'
         else
-          response.reply "the pairs are: #{pairs.join(', ')}"
+          response.reply "the pairs are: #{pairs.join(', ')}"  
         end
       end
 
@@ -41,8 +40,12 @@ module Lita
         pair = create_pair
         if pair_members.size == 1
           response.reply('Sorry, I can\'t make a pair out of one person. Try adding more people with pair add')
+        elsif support_channel.nil?
+          response.reply 'There is no support channel set please set one'
         elsif pair.nil?
           response.reply 'There is nobody to pair 😭'
+        elsif response.room.name.include? ('#adlm-test')
+            response.reply 'you can only set the topic on the #adlm-support channel'
         else
           response.reply "/topic #{pair.join(' & ')} on Support - Remember to @ mention if slow response - Feb 9th"
         end
@@ -55,6 +58,10 @@ module Lita
         else
           response.reply "Let's see... how about a pair of:  #{pair.join(', ')}"
         end
+      end
+
+      def save_channel(channel)
+        redis.set('support_channel', channel)
       end
 
       def remove_user(user)
@@ -70,6 +77,10 @@ module Lita
         pair = members.take(2)
         return nil if pair.size <= 1
         pair
+      end
+
+      def support_channel
+        redis.get('support_channel')
       end
 
       Lita.register_handler(self)

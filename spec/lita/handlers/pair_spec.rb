@@ -25,6 +25,12 @@ describe Lita::Handlers::Pair, lita_handler: true do
   end
 
   describe 'support pair' do
+
+    before(:each) do
+      Lita::Room.create_or_update("#adlm-support")
+      subject.save_channel '#adlm-support'
+    end
+
     it 'should change the topic of the channel' do
       subject.add_user 'Ryan'
       subject.add_user 'Maurice'
@@ -32,6 +38,26 @@ describe Lita::Handlers::Pair, lita_handler: true do
       expect(replies.last).to include '/topic'
       expect(replies.last).to include 'on Support - Remember to @ mention if slow response - Feb 9th'
       expect(replies.last).to include *subject.redis.smembers('pair_members')
+    end
+
+    it 'should be able to have a different support channel' do
+      subject.save_channel '#waffle-copter'
+      expect(subject.support_channel).to eq('#waffle-copter')
+    end
+
+    it 'should notify when there is no support channel set' do
+      subject.add_user 'Ryan'
+      subject.add_user 'Maurice'
+      subject.redis.del 'support_channel'
+      send_message 'pair support'
+      expect(replies.last).to eq 'There is no support channel set please set one'
+    end
+
+    it 'should only change the the topic when running support pair in the #adlm-support channel' do
+      subject.add_user 'Ryan'
+      subject.add_user 'Maurice'
+      send_message 'pair support', from: Lita::Room.create_or_update("#adlm-test")
+      expect(replies.last).to eq 'you can only set the topic on the #adlm-support channel'
     end
 
     it 'handles no members in the pairing list' do
