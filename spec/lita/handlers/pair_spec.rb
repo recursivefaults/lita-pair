@@ -22,19 +22,30 @@ describe Lita::Handlers::Pair, lita_handler: true do
 
     it { is_expected.to route("pair support") }
     it { is_expected.to route("pair   support") }
-  end
 
+    it { is_expected.to route("pair support_channel one") }
+    it { is_expected.to route("pair   support_channel one") }
+    it { is_expected.to route("pair support_channel #one") }
+  end
+  describe 'support_channel' do 
+    it 'should be set to support-channel' do
+      send_message 'pair support_channel #adlm-support'
+      expect(subject.support_channel).to eq '#adlm-support'
+    end
+
+  end
   describe 'support pair' do
 
+    let(:room) { Lita::Room.create_or_update("#adlm-support") }
+
     before(:each) do
-      Lita::Room.create_or_update("#adlm-support")
       subject.save_channel '#adlm-support'
     end
 
     it 'should change the topic of the channel' do
       subject.add_user 'Ryan'
       subject.add_user 'Maurice'
-      send_message 'pair support'
+      send_message 'pair support', from: room
       expect(replies.last).to include '/topic'
       expect(replies.last).to include 'on Support - Remember to @ mention if slow response - Feb 9th'
       expect(replies.last).to include *subject.redis.smembers('pair_members')
@@ -57,7 +68,7 @@ describe Lita::Handlers::Pair, lita_handler: true do
       subject.add_user 'Ryan'
       subject.add_user 'Maurice'
       send_message 'pair support', from: Lita::Room.create_or_update("#adlm-test")
-      expect(replies.last).to eq 'you can only set the topic on the #adlm-support channel'
+      expect(replies.last).to eq 'You can only set the topic on the #adlm-support channel'
     end
 
     it 'handles no members in the pairing list' do

@@ -36,7 +36,7 @@ module Lita
         end
       end
 
-      route(/^pair\s+support/) do |response|
+      route(/^pair\s+support$/) do |response|
         pair = create_pair
         if pair_members.size == 1
           response.reply('Sorry, I can\'t make a pair out of one person. Try adding more people with pair add')
@@ -44,11 +44,15 @@ module Lita
           response.reply 'There is no support channel set please set one'
         elsif pair.nil?
           response.reply 'There is nobody to pair 😭'
-        elsif response.room.name.include? ('#adlm-test')
-            response.reply 'you can only set the topic on the #adlm-support channel'
+        elsif !response.room.nil? && !response.room.name.include?(support_channel) 
+            response.reply 'You can only set the topic on the #adlm-support channel'   
         else
           response.reply "/topic #{pair.join(' & ')} on Support - Remember to @ mention if slow response - Feb 9th"
         end
+      end
+
+      route(/^pair\s+support_channel\s+([#\w]+)/) do |response|
+        save_channel response.args[1]
       end
 
       route(/^pair\s+one/) do |response|
