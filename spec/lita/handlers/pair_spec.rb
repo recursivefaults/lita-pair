@@ -25,12 +25,11 @@ describe Lita::Handlers::Pair, lita_handler: true do
 
     it { is_expected.to route("pair support_channel one") }
     it { is_expected.to route("pair   support_channel one") }
-    it { is_expected.to route("pair support_channel #one") }
   end
   describe 'support_channel' do 
     it 'should be set to support-channel' do
-      send_message 'pair support_channel #adlm-support'
-      expect(subject.support_channel).to eq '#adlm-support'
+      send_message 'pair support_channel adlm-support'
+      expect(subject.support_channel).to eq 'adlm-support'
     end
 
   end
@@ -39,7 +38,7 @@ describe Lita::Handlers::Pair, lita_handler: true do
     let(:room) { Lita::Room.create_or_update("#adlm-support") }
 
     before(:each) do
-      subject.save_channel '#adlm-support'
+      subject.save_channel 'adlm-support'
     end
 
     it 'should change the topic of the channel' do
@@ -53,8 +52,8 @@ describe Lita::Handlers::Pair, lita_handler: true do
     end
 
     it 'should be able to have a different support channel' do
-      subject.save_channel '#waffle-copter'
-      expect(subject.support_channel).to eq('#waffle-copter')
+      subject.save_channel 'waffle-copter'
+      expect(subject.support_channel).to eq('waffle-copter')
     end
 
     it 'should notify when there is no support channel set' do
