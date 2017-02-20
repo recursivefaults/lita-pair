@@ -47,7 +47,7 @@ module Lita
         elsif !response.room.nil? && !response.room.name.include?(support_channel) 
             response.reply 'You can only set the topic on the #adlm-support channel'   
         else
-          response.reply "/topic #{pair.join(' & ')} on Support - Remember to @ mention if slow response - Feb 9th"
+          response.reply "/topic #{pair.join(' & ')} on Support - Remember to @ mention if slow response - #{Date.today.strftime('%b %e')}"
         end
       end
 

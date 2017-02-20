@@ -46,8 +46,9 @@ describe Lita::Handlers::Pair, lita_handler: true do
       subject.add_user 'Ryan'
       subject.add_user 'Maurice'
       send_message 'pair support', from: room
+      date = Date.today.strftime('%b %e') 
       expect(replies.last).to include '/topic'
-      expect(replies.last).to include 'on Support - Remember to @ mention if slow response - Feb 9th'
+      expect(replies.last).to include "on Support - Remember to @ mention if slow response - #{date}"
       expect(replies.last).to include *subject.redis.smembers('pair_members')
     end
 
