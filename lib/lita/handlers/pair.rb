@@ -38,15 +38,16 @@ module Lita
 
       route(/^pair\s+support$/) do |response|
         pair = create_pair
-        log.info("Support channel is: #{support_channel} \t Room is: #{response.room.metadata}")
         if pair_members.size == 1
           response.reply('Sorry, I can\'t make a pair out of one person. Try adding more people with pair add')
         elsif support_channel.nil?
           response.reply 'There is no support channel set please set one'
         elsif pair.nil?
           response.reply 'There is nobody to pair 😭'
-        elsif !response.room.nil? && !response.room.name.include?(support_channel) 
-            response.reply 'You can only set the topic on the #adlm-support channel'   
+        elsif !response.room.nil? && response.room.id != support_channel
+          full_room = Lita::Room.fuzzy_find(support_channel)
+          binding.pry
+          response.reply "You can only set the topic on the #{full_room.name} channel"
         else
           response.reply "/topic #{pair.join(' & ')} on Support - Remember to @ mention if slow response - #{Date.today.strftime('%b %e')}"
         end
@@ -55,8 +56,8 @@ module Lita
       route(/^pair\s+support_channel\s+(\w+)/) do |response|
         room_id = response.args[1]
         room = Lita::Room.fuzzy_find(room_id)
-        log.debug("Room sent: #{room_id}, Room located: #{room.id}")
         save_channel room.id
+        response.reply "Support channel has been set to #{room.name}"
       end
 
       route(/^pair\s+one/) do |response|

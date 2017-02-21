@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "lita-pair"
-  spec.version       = "0.2.1"
+  spec.version       = "0.2.2"
   spec.authors       = ["Ryan Latta"]
   spec.email         = ["recursive.faults@gmail.com"]
   spec.description   = "A lita handler that will help with pair programming rotations"
