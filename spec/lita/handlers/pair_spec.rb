@@ -5,6 +5,7 @@ describe Lita::Handlers::Pair, lita_handler: true do
   let(:redis) { Redis.new }
   let(:robot) { Lita::Robot.new(registry) }
   subject { described_class.new(robot) }
+
   describe 'routing' do
     it { is_expected.to route("pair add Ryan") }
     it { is_expected.to route("pair add Ryan Latta") }
@@ -26,15 +27,15 @@ describe Lita::Handlers::Pair, lita_handler: true do
     it { is_expected.to route("pair support_channel one") }
     it { is_expected.to route("pair   support_channel one") }
   end
+
   describe 'support_channel' do 
     it 'should be set to support-channel' do
       send_message 'pair support_channel adlm-support'
       expect(subject.support_channel).to eq 'adlm-support'
     end
-
   end
-  describe 'support pair' do
 
+  describe 'support pair' do
     let(:room) { Lita::Room.create_or_update("#adlm-support") }
 
     before(:each) do

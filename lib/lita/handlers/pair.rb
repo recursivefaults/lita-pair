@@ -38,7 +38,7 @@ module Lita
 
       route(/^pair\s+support$/) do |response|
         pair = create_pair
-        log.info("Support channel is: #{support_channel} \t Room is: #{response.room}")
+        log.info("Support channel is: #{support_channel} \t Room is: #{response.room.metadata}")
         if pair_members.size == 1
           response.reply('Sorry, I can\'t make a pair out of one person. Try adding more people with pair add')
         elsif support_channel.nil?
@@ -53,7 +53,10 @@ module Lita
       end
 
       route(/^pair\s+support_channel\s+(\w+)/) do |response|
-        save_channel response.args[1]
+        room_id = response.args[1]
+        room = Lita::Room.fuzzy_find(room_id)
+        log.debug("Room sent: #{room_id}, Room located: #{room.id}")
+        save_channel room.id
       end
 
       route(/^pair\s+one/) do |response|
