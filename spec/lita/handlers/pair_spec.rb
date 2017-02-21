@@ -48,7 +48,6 @@ describe Lita::Handlers::Pair, lita_handler: true do
       subject.add_user 'Maurice'
       send_message 'pair support', from: room
       date = Date.today.strftime('%b %e') 
-      expect(replies.last).to include '/topic'
       expect(replies.last).to include "on Support - Remember to @ mention if slow response - #{date}"
       expect(replies.last).to include *subject.redis.smembers('pair_members')
     end
@@ -64,13 +63,6 @@ describe Lita::Handlers::Pair, lita_handler: true do
       subject.redis.del 'support_channel'
       send_message 'pair support'
       expect(replies.last).to eq 'There is no support channel set please set one'
-    end
-
-    it 'should only change the the topic when running support pair in the #adlm-support channel' do
-      subject.add_user 'Ryan'
-      subject.add_user 'Maurice'
-      send_message 'pair support', from: Lita::Room.create_or_update("adlm-test")
-      expect(replies.last).to eq 'You can only set the topic on the adlm-support channel'
     end
 
     it 'handles no members in the pairing list' do

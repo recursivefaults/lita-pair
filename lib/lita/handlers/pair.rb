@@ -44,12 +44,8 @@ module Lita
           response.reply 'There is no support channel set please set one'
         elsif pair.nil?
           response.reply 'There is nobody to pair 😭'
-        elsif !response.room.nil? && response.room.id != support_channel
-          full_room = Lita::Room.fuzzy_find(support_channel)
-          binding.pry
-          response.reply "You can only set the topic on the #{full_room.name} channel"
         else
-          response.reply "/topic #{pair.join(' & ')} on Support - Remember to @ mention if slow response - #{Date.today.strftime('%b %e')}"
+          set_topic(response, robot, "#{pair.join(' & ')} on Support - Remember to @ mention if slow response - #{Date.today.strftime('%b %e')}")
         end
       end
 
@@ -95,6 +91,16 @@ module Lita
       Lita.register_handler(self)
 
       private
+
+      def set_topic(response, robot, message)
+          case robot.config.robot.adapter
+          when :slack
+            robot.chat_service.set_topic(support_channel, message)
+          else
+            response.reply message
+          end
+      end
+
       def pair_members
         members = redis.smembers(REDIS_KEY)
       end
