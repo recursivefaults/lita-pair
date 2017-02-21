@@ -46,6 +46,7 @@ module Lita
           response.reply 'There is nobody to pair 😭'
         else
           set_topic(response, robot, "#{pair.join(' & ')} on Support - Remember to @ mention if slow response - #{Date.today.strftime('%b %e')}")
+          response.reply 'Topic was set'
         end
       end
 
@@ -95,7 +96,7 @@ module Lita
       def set_topic(response, robot, message)
           case robot.config.robot.adapter
           when :slack
-            robot.chat_service.set_topic(support_channel, message)
+            robot.chat_service.set_topic(Lita.Source.new(room: support_channel), message)
           else
             response.reply message
           end
