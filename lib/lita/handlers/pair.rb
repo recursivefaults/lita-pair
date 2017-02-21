@@ -45,8 +45,7 @@ module Lita
         elsif pair.nil?
           response.reply 'There is nobody to pair 😭'
         else
-          set_topic(response, robot, "#{pair.join(' & ')} on Support - Remember to @ mention if slow response - #{Date.today.strftime('%b %e')}")
-          response.reply 'Topic was set'
+          robot.set_topic(Lita::Source.new(room: support_channel), "#{pair.join(' & ')} on Support - Remember to @ mention if slow response - #{Date.today.strftime('%b %e')}")
         end
       end
 
@@ -92,15 +91,6 @@ module Lita
       Lita.register_handler(self)
 
       private
-
-      def set_topic(response, robot, message)
-          case robot.config.robot.adapter
-          when :slack
-            robot.chat_service.set_topic(Lita.Source.new(room: support_channel), message)
-          else
-            response.reply message
-          end
-      end
 
       def pair_members
         members = redis.smembers(REDIS_KEY)
